@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.1.7-experimental
 
 # Environment to build manager binary
-FROM golang:1.15.6-alpine3.12 as build
+FROM golang:1.22-alpine as build
 WORKDIR /gin
 
 RUN apk update && apk add gcc musl-dev
