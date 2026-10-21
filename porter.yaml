@@ -1,0 +1,16 @@
+version: v2
+name: golang-getting-started
+build:
+  method: docker
+  context: .
+  dockerfile: ./Dockerfile
+services:
+  - name: web
+    type: web
+    run: /app/server
+    port: 8080
+    cpuCores: 0.25
+    ramMegabytes: 128
+    healthCheck:
+      enabled: true
+      httpPath: /healthz

@@ -1,25 +1,11 @@
-# syntax=docker/dockerfile:1.1.7-experimental
-
-# Environment to build manager binary
-FROM golang:1.22-alpine as build
-WORKDIR /gin
-
-RUN apk update && apk add gcc musl-dev
+FROM golang:1.27-trixie AS build
+WORKDIR /src
 
 COPY . .
+RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /out/server .
 
-RUN go mod download
-
-RUN go build -ldflags '-w -s' -a -o ./bin/porter-gin-example .
-
-# Deployment environment
-# ----------------------
-FROM alpine:3.12
-WORKDIR /gin
-
-RUN apk update && apk add git curl
-
-COPY --from=build /gin/bin/porter-gin-example /usr/bin/
-
-ENTRYPOINT [ "porter-gin-example" ]
-
+FROM gcr.io/distroless/static-debian13:nonroot
+COPY --from=build /out/server /app/server
+USER nonroot:nonroot
+EXPOSE 8080
+CMD ["/app/server"]
